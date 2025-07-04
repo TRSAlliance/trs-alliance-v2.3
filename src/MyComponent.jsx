@@ -1,3 +1,4 @@
+// src/MyComponent.jsx
 import React from "react";
 
 export default function MyComponent() {
