@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build && npm run obfuscate"
+  publish = "build"
+  environment = { 
+    STEALTH_KEY = "encrypted_$(openssl rand -hex 16)" 
+  }
+
+[[redirects]]
+  from = "/*"
+  to = "https://trsalliance.org/:splat"
+  status = 301
+  force = true
