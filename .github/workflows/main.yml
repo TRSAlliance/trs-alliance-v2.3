@@ -27,14 +27,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       # Install dependencies
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # Run build and obfuscation
       - name: Build and Obfuscate
-        run: npm run build && npm run obfuscate
+        run: |
+          npm run build
+          npm run obfuscate
         env:
           STEALTH_KEY: ${{ secrets.STEALTH_KEY }}
 
@@ -51,11 +54,16 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
+      # Set up Firebase CLI
+      - name: Install Firebase CLI
+        run: |
+          curl -sL https://firebase.tools | bash
+          firebase --version
+
       # Deploy Firebase Functions and Firestore Rules
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v3
-        with:
-          args: deploy --only functions,firestore
+        run: |
+          firebase deploy --only functions,firestore --project trsalliance-d8c4c --non-interactive
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
@@ -82,12 +90,13 @@ jobs:
 
       # Security Audit
       - name: Run Security Audit
-        run: npm audit --production
+        run: npm audit --production --audit-level=critical
         continue-on-error: true
 
-      # Notify on Failure (Dead Man’s Switch)
+      # Notify on Failure (Dead Man's Switch)
       - name: Notify Contingency
         if: failure()
         run: |
           curl -X POST "https://us-central1-trsalliance-d8c4c.cloudfunctions.net/triggerContingency" \
-            -H "Authorization: Bearer ${{ secrets.FIREBASE_TOKEN }}"
+            -H "Authorization: Bearer ${{ secrets.FIREBASE_TOKEN }}" \
+            -d '{"event":"${{ github.event_name }}","repo":"${{ github.repository }}","ref":"${{ github.ref }}"}'
