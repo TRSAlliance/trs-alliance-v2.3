@@ -1,4 +1,4 @@
-name: TRS-4 Stealth Deployment
+name: TRS-4 Stealth Deployment 
 
 on:
   push:
