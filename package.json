@@ -2,6 +2,20 @@
   "scripts": {
     "prebuild": "node setup-env.js",
     "build": "npm run prebuild && next build",
-    "netlify:build": "npm run build"
+    "build:clean": "npm run prebuild && rm -rf .next out && next build",
+    "build:safe": "npm config set optional false && npm install && netlify build",
+    "dev": "next dev",
+    "start": "next start",
+    "lint": "next lint",
+    "netlify:build": "npm run build",
+    "netlify:dev": "netlify dev"
+  },
+  "optionalDependencies": {
+    "jpegtran-bin": false,
+    "sharp": false
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
+
