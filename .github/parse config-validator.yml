@@ -1,0 +1,71 @@
+# TRS CONFIG VALIDATION LAYER v2.3.8
+name: 🛡️ TRS Config Sentinel
+
+on:
+  push:
+    paths:
+      - '.netlify.toml'
+      - '.github/workflows/*.yml'
+  pull_request:
+    paths:
+      - '**/*.{toml,yml,json}'
+
+jobs:
+  validate-configs:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      # LAYER 1: SYNTAX VALIDATION
+      - name: Checkout (Strict Mode)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            .netlify.toml
+            .github/
+
+      - name: Validate TOML
+        uses: taiki-e/action-toml@v1
+        with:
+          files: .netlify.toml
+          strict: true
+
+      # LAYER 2: STRUCTURE ENFORCEMENT
+      - name: TRS Schema Check
+        uses: actions/github-script@v6
+        env:
+          TRS_SCHEMA_VERSION: "2.3"
+        with:
+          script: |
+            const toml = require('toml')
+            const fs = require('fs')
+            const schema = {
+              required: ['build', 'context'],
+              build: {
+                required: ['command', 'publish'],
+                command: /trs-build/
+              }
+            }
+            
+            try {
+              const config = toml.parse(fs.readFileSync('.netlify.toml'))
+              if (!config.build?.command.includes('trs-build')) {
+                core.setFailed('TRS Violation: Build command missing security protocol')
+              }
+            } catch (e) {
+              core.setFailed(`TRS Config Parse Error: ${e.message}`)
+            }
+
+      # LAYER 3: SECURITY CHECKS
+      - name: Secret Scanning
+        run: |
+          grep -rE 'token|key|secret' .netlify.toml | grep -vE '@trs_|encrypted' \
+            && exit 1 || echo "No raw secrets detected"
+
+      # LAYER 4: DEPLOYABILITY CHECK
+      - name: Dry Run
+        uses: netlify/actions/cli@master
+        with:
+          args: build --dry
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.TRS_NETLIFY_TOKEN }}
