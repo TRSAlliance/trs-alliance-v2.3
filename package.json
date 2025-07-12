@@ -1,52 +1,20 @@
 {
-  "name": "trs-alliance-v2.3",
-  "version": "2.3.0",
-  "description": "TRS Alliance v2.3 – Simulation-ready React + Tailwind platform built by Daniel K. L. Hatton. Powered by GhostShift.",
-  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "obfuscate": "javascript-obfuscator ./build --output ./build --config obfuscator.config.js",
-    "build-and-obfuscate": "npm run build && npm run obfuscate",
-    "dev": "npm start",
-    "preview": "serve -s build"
+    "prebuild": "powershell -ExecutionPolicy Bypass -File ./scripts/prebuild.ps1",
+    "build": "npm run prebuild && next build",
+    "build:clean": "npm run prebuild && rm -rf .next out && next build",
+    "build:safe": "npm config set optional false && npm install && netlify build",
+    "dev": "next dev",
+    "start": "next start",
+    "lint": "next lint",
+    "netlify:build": "npm run build",
+    "netlify:dev": "netlify dev"
   },
-  "keywords": [
-    "trs",
-    "alliance",
-    "react",
-    "tailwind",
-    "ghostshift"
-  ],
-  "author": "Daniel K. L. Hatton",
-  "license": "MIT",
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+  "optionalDependencies": {
+    "jpegtran-bin": false,
+    "sharp": false
   },
-  "devDependencies": {
-    "@tailwindcss/forms": "^0.5.6",
-    "@tailwindcss/typography": "^0.5.10",
-    "autoprefixer": "^10.4.16",
-    "javascript-obfuscator": "^4.0.2",
-    "postcss": "^8.4.31",
-    "serve": "^14.2.1",
-    "tailwindcss": "^3.3.5"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
