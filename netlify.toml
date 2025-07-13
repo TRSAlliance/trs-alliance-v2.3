@@ -12,3 +12,44 @@
   from = "/*"
   to = "/index.html"
   status = 200
+[build]
+  publish = "build"            # Or "dist", "out", etc. depending on your framework
+  command = "npm run build"
+
+[[redirects]]
+  from = "https://trsalliance.co/*"
+  to = "https://trsalliance.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://trsalliance.com/*"
+  to = "https://trsalliance.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://trsalliance.online/*"
+  to = "https://trsalliance.org/onboarding"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/sim/*"
+  to = "/sim/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/onboarding"
+  to = "/onboarding.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
