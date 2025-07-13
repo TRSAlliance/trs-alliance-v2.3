@@ -1,41 +1,37 @@
-// scripts/rotate-stealth-key.ts
 import crypto from "crypto";
 import fs from "fs";
+import path from "path";
 import axios from "axios";
 
-const STEALTH_KEY_PATH = "./secrets/stealth.key";
-const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK_URL || "";
-const POST_TO_DISCORD = Boolean(DISCORD_WEBHOOK);
+const keyPath = path.resolve("public/stealth.key");
+const logPath = path.resolve("public/rotation-log.json");
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK_URL;
 
-function generateStealthKey(): string {
-  const key = crypto.randomBytes(32).toString("hex"); // 256-bit
-  return key;
-}
+export async function rotateStealthKey() {
+  const newKey = crypto.randomBytes(32).toString("hex");
+  const hash = crypto.createHash("sha256").update(newKey).digest("hex");
 
-async function rotateKey() {
-  const key = generateStealthKey();
-  fs.writeFileSync(STEALTH_KEY_PATH, key, { encoding: "utf8" });
+  fs.writeFileSync(keyPath, newKey, "utf-8");
 
-  const hash = crypto.createHash("sha256").update(key).digest("hex");
-  console.log(`✅ New STEALTH_KEY generated`);
-  console.log(`🔐 SHA256: ${hash}`);
+  const timestamp = new Date().toISOString();
+  const log = fs.existsSync(logPath)
+    ? JSON.parse(fs.readFileSync(logPath, "utf-8"))
+    : [];
 
-  if (POST_TO_DISCORD) {
+  log.unshift({ hash, timestamp });
+  fs.writeFileSync(logPath, JSON.stringify(log, null, 2));
+
+  console.log(`🔐 New STEALTH_KEY hash: ${hash}`);
+
+  if (DISCORD_WEBHOOK) {
     await axios.post(DISCORD_WEBHOOK, {
-      username: "TRS Sentinel",
-      content: `🔁 **STEALTH_KEY rotated**
-\`\`\`
-SHA256: ${hash}
-Time: ${new Date().toISOString()}
-\`\`\``,
+      username: "Sentinel",
+      content: `🚨 Stealth Key Rotated\n**SHA256:** \`${hash.slice(0, 12)}...\`\n**Time:** ${timestamp}`,
     });
-    console.log("📡 Rotation broadcast sent to Discord.");
   }
 
-  return hash;
+  return { hash, timestamp };
 }
 
-rotateKey().catch((err) => {
-  console.error("❌ Key rotation failed", err);
-  process.exit(1);
-});
+// Auto-run if standalone
+if (require.main === module) rotateStealthKey();
