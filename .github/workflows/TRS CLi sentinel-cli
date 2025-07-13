@@ -1,0 +1,7 @@
+ - name: Build TRS CLI
+  run: |
+    cd sentinel-cli
+    npm install
+    npm run build
+    echo "$PWD/bin" >> $GITHUB_PATH
+ 
