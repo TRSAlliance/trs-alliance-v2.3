@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' && github.schedule == '0 0 * * *'
     steps:
-      - name: Rotate STEALTH_KEY
+      - name: Rotate STEALTH_KEY 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
