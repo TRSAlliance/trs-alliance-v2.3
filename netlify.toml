@@ -1,4 +1,4 @@
-[build]
+[build] 
   publish = "build"
   command = "bash prebuild.sh && npm run build"
   environment = { 
