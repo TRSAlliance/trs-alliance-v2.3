@@ -1,12 +1,12 @@
 [build]
   publish = "build"
-  command = "npm run trs-build"
-  environment = { 
-    NODE_ENV = "production"
-  }
+  command = "npm run trs-build && npm run obfuscate"  # Added obfuscation step
+  functions = "netlify/functions"
 
-[functions]
-  directory = "netlify/functions"
+[build.environment]  # Fixed syntax - use section instead of inline table
+  NODE_ENV = "production"
+  STEALTH_KEY = "/build/stealth.key"  # Recommended path adjustment
+  TRS_VERSION = "v2.3"
 
 [[redirects]]
   from = "https://trsalliance.co/*"
@@ -35,6 +35,14 @@
   from = "/sim/*"
   to = "/sim/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' *.trsalliance.org; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
 
 [[redirects]]
   from = "/onboarding"
