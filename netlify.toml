@@ -8,41 +8,15 @@
   STEALTH_KEY = "/build/stealth.key"
   TRS_VERSION = "v2.3"
 
-# Redirects
 [[redirects]]
   from = "https://trsalliance.co/*"
   to = "https://trsalliance.org/:splat"
   status = 301
   force = true
 
-[[redirects]]
-  from = "https://trsalliance.com/*"
-  to = "https://trsalliance.org/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/admin/*"
-  to = "/admin/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Security Headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Plugins
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-[[plugins]]
+[[plugins]]  # Correct plugin syntax
   package = "netlify-plugin-ghost-markdown"
   enabled = false
+
+[[plugins]]  # Other plugins
+  package = "@netlify/plugin-nextjs"
