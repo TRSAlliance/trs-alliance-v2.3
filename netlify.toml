@@ -13,7 +13,6 @@
   to = "/index.html"
   status = 200
 
-# CORRECTED PLUGIN SECTION:
+# Only keep essential plugins you actually use
 [[plugins]]
-  package = "netlify-plugin-ghost-markdown"
-  # Remove the empty [plugins.inputs] block completely
+  package = "@netlify/plugin-nextjs"  # Only if you use Next.js
