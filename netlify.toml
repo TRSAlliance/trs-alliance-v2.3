@@ -9,14 +9,12 @@
   TRS_VERSION = "v2.3"
 
 [[redirects]]
-  from = "https://trsalliance.co/*"
-  to = "https://trsalliance.org/:splat"
-  status = 301
-  force = true
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
-[[plugins]]  # Correct plugin syntax
+# To DISABLE a plugin, simply don't include it
+# Or use this empty inputs method:
+[[plugins]]
   package = "netlify-plugin-ghost-markdown"
-  enabled = false
-
-[[plugins]]  # Other plugins
-  package = "@netlify/plugin-nextjs"
+  [plugins.inputs]  # Empty inputs effectively disables it
