@@ -1,3 +1,11 @@
+/**
+ * TRSAlliance JS Obfuscation Configuration
+ * Used to protect core simulation logic and CLI tools from reverse engineering.
+ * Applied during GitHub Actions deploy via `javascript-obfuscator`.
+ * Ensures control flow flattening, string array shuffling, and anti-debugging.
+ * Version: 2.3.1
+ */
+
 module.exports = {
   compact: true,
   controlFlowFlattening: true,
