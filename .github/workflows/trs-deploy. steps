@@ -1,6 +1,0 @@
-- name: 🔁 Rotate Stealth Key
-  run: |
-    npm install --no-save axios ts-node typescript
-    npx ts-node .github/rotate-stealth-key.ts
-  env:
-    DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK }}
