@@ -56,3 +56,7 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[plugins]]
+  package = "netlify-plugin-ghost-markdown"
+  enabled = false
