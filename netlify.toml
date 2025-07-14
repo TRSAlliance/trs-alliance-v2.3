@@ -8,6 +8,7 @@
   STEALTH_KEY = "/build/stealth.key"
   TRS_VERSION = "v2.3"
 
+# Redirects
 [[redirects]]
   from = "https://trsalliance.co/*"
   to = "https://trsalliance.org/:splat"
@@ -21,24 +22,8 @@
   force = true
 
 [[redirects]]
-  from = "https://trsalliance.online/*"
-  to = "https://trsalliance.org/onboarding"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/admin/*"
   to = "/admin/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/sim/*"
-  to = "/sim/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/onboarding"
-  to = "/onboarding.html"
   status = 200
 
 [[redirects]]
@@ -46,14 +31,15 @@
   to = "/index.html"
   status = 200
 
+# Security Headers
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' *.trsalliance.org; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
 
+# Plugins
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
