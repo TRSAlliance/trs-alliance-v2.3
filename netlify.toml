@@ -13,8 +13,7 @@
   to = "/index.html"
   status = 200
 
-# To DISABLE a plugin, simply don't include it
-# Or use this empty inputs method:
+# CORRECTED PLUGIN SECTION:
 [[plugins]]
   package = "netlify-plugin-ghost-markdown"
-  [plugins.inputs]  # Empty inputs effectively disables it
+  # Remove the empty [plugins.inputs] block completely
