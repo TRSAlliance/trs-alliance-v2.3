@@ -1,20 +1,12 @@
-[build] 
+[build]
   publish = "build"
-  command = "bash prebuild.sh && npm run build"
+  command = "npm run trs-build"
   environment = { 
     NODE_ENV = "production"
   }
 
 [functions]
   directory = "netlify/functions"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-[build]
-  publish = "build"            # Or "dist", "out", etc. depending on your framework
-  command = "npm run build"
 
 [[redirects]]
   from = "https://trsalliance.co/*"
