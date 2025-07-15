@@ -1,18 +1,13 @@
 [build]
-  publish = "build"
-  command = "npm run trs-build && npm run obfuscate"
-  functions = "netlify/functions"
+  command = "npm run build"
+  publish = "dist" # or "out" if using Next.js
+  environment = { NODE_VERSION = "18" }
 
-[build.environment]
-  NODE_ENV = "production"
-  STEALTH_KEY = "/build/stealth.key"
-  TRS_VERSION = "v2.3"
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Only keep essential plugins you actually use
-[[plugins]]
-  package = "@netlify/plugin-nextjs"  # Only if you use Next.js
