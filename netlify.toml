@@ -1,11 +1,22 @@
 [build]
-  command = "npm run build"
-  publish = "dist" # or "out" if using Next.js
-  environment = { NODE_VERSION = "18" }
+  base = "."                           # Root directory
+  command = "npm run trs15-build"     # Custom build with validation
+  publish = "dist"                    # Output directory
+  functions = "netlify/functions/secure"
 
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
+  [build.environment]
+    NODE_ENV = "production"
+    FIREBASE_PROJECT = "trs-operator-live"
+    SUPABASE_URL = "your_supabase_url"
+    SUPABASE_KEY = "your_supabase_key"
+    TRS_BLOOD_SEAL = "your_trs_blood_seal"
+    OPENAI_API_KEY = "your_openai_key"
+    SPECIAL_ACCESS_TOKEN = "your_access_token"
+    DEPLOY_KEY = "your_deploy_key"
+    ANT_PROCESS = "your_ant_process"
+    UNDERNAME = "@"
+    NETLIFY_AUTH_TOKEN = "your_netlify_token"
+    TRS_DEPLOY_TOKEN = "your_trs_deploy_token"
 
 [[redirects]]
   from = "/*"
