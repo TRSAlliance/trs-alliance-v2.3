@@ -1,4 +1,4 @@
-name: 🔁 TRSAlliance Deploy
+name: 🔁 TRSAlliance Deploy.yml
 
 on:
   push:
