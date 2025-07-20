@@ -1,0 +1,94 @@
+name: 🛡️ TRS Unified Deployment Protocol v2.4
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DEPLOY_ENV: ${{ contains(github.ref, 'prod') && 'production' || 'staging' }}
+  FIREBASE_PROJECT: ghostshift-${{ env.DEPLOY_ENV == 'production' && 'd5f46' || 'staging' }}
+
+jobs:
+  verify:
+    name: 🔐 Cryptographic Verification
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for full commit history
+
+      - name: Validate TRS Origin Key
+        run: node .github/scripts/verify-origin-key.js
+        env:
+          TRS_SALT: ${{ secrets.TRS_SALT }}
+
+      - name: Verify Blood Seal
+        run: node .github/scripts/verify-bloodseal.js
+        env:
+          TRS_BLOOD_SEAL: ${{ secrets.TRS_BLOOD_SEAL }}
+
+  build:
+    name: 🏗 Build & Test
+    needs: verify
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run trs15-build
+        env:
+          TRS_BLOOD_SEAL: ${{ secrets.TRS_BLOOD_SEAL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SPECIAL_ACCESS_TOKEN: ${{ secrets.SPECIAL_ACCESS_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 3
+
+  deploy:
+    name: 🚀 Multi-Cloud Deployment
+    needs: build
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target: [firebase, netlify]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      - name: Deploy to ${{ matrix.target }}
+        uses: ./.github/actions/deploy-${{ matrix.target }}
+        with:
+          token: ${{ secrets[format('TRS_{0}_TOKEN', matrix.target)] }}
+          project: ${{ env.FIREBASE_PROJECT }}
+          site-id: ${{ matrix.target == 'netlify' && secrets.NETLIFY_SITE_ID || '' }}
+
+  notify:
+    name: 📣 War Room Alert
+    needs: deploy
+    runs-on: ubuntu-22.04
+    if: always()
+    steps:
+      - uses: Ilshidur/action-discord@v3
+        with:
+          webhook: ${{ secrets.TRS_WARROOM_WEBHOOK }}
+          message: |
+            TRS v2.4 Deployment ${{ job.status }}:
+            • Commit: [${{ github.sha }}](https://github.com/TRSAlliance/trs-alliance-v2.3/commit/${{ github.sha }})
+            • Environment: ${{ env.DEPLOY_ENV }}
+            • Firebase: ${{ needs.deploy.outputs.firebase-url || 'Failed' }}
+            • Netlify: ${{ needs.deploy.outputs.netlify-url || 'Failed' }}
