@@ -1,5 +1,5 @@
 # Placeholder for README.md
-# 🚀 TRS Alliance – [Repository Name]
+# 🚀 TRS Alliance – trs-alliance-v2.3
 
 ## 📌 Overview
 This repository is part of the **TRS Alliance ecosystem**, a platform designed to balance **human–AI collaboration** through ethical systems design, modular scaling, and resilient protocols.  
